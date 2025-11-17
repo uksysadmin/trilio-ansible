@@ -20,6 +20,22 @@ spec:
       name: {{ trilio_kubernetes_event_target }}
       namespace: {{ trilio_kubernetes_restore_namespace }}
     type: ConsistentSet
+  {% if trilio_kubernetes_scale_vm_transform %}
+  transformComponents:
+    custom:
+    - jsonPatches:
+      - op: replace
+        path: /spec/template/spec/domain/cpu/cores
+        value: 2
+      resources:
+        groupVersionKind:
+          group: kubevirt.io
+          kind: VirtualMachine
+          version: v1
+        objects:
+        - demo-vm-1
+      transformName: scale-cores
+  {% endif %}
   excludeResources:
   - groupVersionKind:
       group: "operator.tekton.dev"
